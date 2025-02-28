@@ -49,7 +49,15 @@ app.get('/api/checkIfActive', async (req, res) => {
     }
 
 })
-
+app.get('/api/GetAllProjects', async (req, res) => {
+    try {
+        // const resp = await project_service.getAllProjects()
+        return res.json({ data: [] })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to get all projects" });
+    }
+})
 
 app.listen(3001, () => {
     console.log('Server running on http://localhost:3000');

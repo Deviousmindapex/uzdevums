@@ -53,6 +53,9 @@ const Header = () => {
         </Link>
         {isLoggedIn ? (
           <>
+            <Link to="/view_projects" style={styles.link}>
+              View projects
+            </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>
               Logout
             </button>
