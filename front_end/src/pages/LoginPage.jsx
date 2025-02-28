@@ -5,10 +5,22 @@ import {
   CardTitle,
 } from "../components/ui/Card";
 import LoginForm from "../components/auth/LoginForm";
+import { storageService } from "../services/storageService";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
   const handleLogin = (email, password) => {
     console.log("Logging in with", { email, password });
+    setIsAuthenticated(true);
+    storageService.setItem("username", email);
   };
 
   return (

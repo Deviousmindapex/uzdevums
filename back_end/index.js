@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
+const auth_service = require('./db/auth');
 app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -12,9 +13,41 @@ app.use(cors({
 app.use(express.json());
 
 
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     console.log(req.body)
-    res.json({ message: "Hello" })
+    try {
+        const resp = await auth_service.login(req.body.email, req.body.password)
+        return res.json({ message: "Hello" })
+
+    } catch (error) {
+        console.log(error);
+
+        return res.status(400).json({ message: error || "Login failed" });
+
+    }
+});
+app.post('/api/logout', async (req, res) => {
+    console.log(req.body)
+    try {
+        const resp = await auth_service.logOut(req.body.email)
+        return res.json({ message: "succesfully logged out" })
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({ message: "Failed to log out" });
+    }
+})
+
+app.get('/api/checkIfActive', async (req, res) => {
+    try {
+        console.log(req.query.email);
+
+        const resp = await auth_service.checkIfActive(req.query.email)
+        return res.json({ message: resp })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to check if active" });
+    }
+
 })
 
 
