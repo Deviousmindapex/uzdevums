@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 const auth_service = require('./db/auth');
+const Project_service = require('./db/ProjectDB')
 app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -51,14 +52,26 @@ app.get('/api/checkIfActive', async (req, res) => {
 })
 app.get('/api/GetAllProjects', async (req, res) => {
     try {
-        // const resp = await project_service.getAllProjects()
-        return res.json({ data: [] })
+        const resp = await Project_service.GetAllProjects()
+        return res.json({ data: resp })
     } catch (error) {
         console.log(error);
         return res.status(400).json({ message: "Failed to get all projects" });
     }
 })
+app.post('/api/AddNewProject', async (req, res) => {
+    try {
 
+        const resp = await Project_service.addNewProject(req.body.name, req.body.email)
+        console.log(resp);
+
+        return res.json({ message: "Project added successfully" })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json(error);
+    }
+
+})
 app.listen(3001, () => {
     console.log('Server running on http://localhost:3000');
 });

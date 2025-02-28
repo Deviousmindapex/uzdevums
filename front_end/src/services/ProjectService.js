@@ -12,4 +12,14 @@ export const ProjectService = {
             return [];
         }
     },
+    async AddNewProject(name, email) {
+        try {
+            const response = await axios.post(`${API_URL}/AddNewProject`, { name, email });
+            console.log(response);
+            return response
+
+        } catch (error) {
+            throw new Error(error.response?.data?.message || 'Failed to add');
+        }
+    }
 }
