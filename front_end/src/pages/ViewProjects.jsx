@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card } from "react-bootstrap";
+import { Card, Row, Col } from "react-bootstrap";
 import { storageService } from "../services/storageService";
 import { ProjectService } from "../services/ProjectService";
-import AddNewProjectForm from "../components/forms/AddNewProjectForm";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -13,9 +12,10 @@ export default function ViewProjects() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const [projectData, setProjectData] = useState([]);
-  const [showAddNewProjectForm, setShowAddNewProjectForm] = useState(false);
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [taskData, setTaskData] = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [searchProject, setSearchProject] = useState("");
+  const [currentPageProject, setCurrentPageProject] = useState(1);
   const itemsPerPage = 5;
 
   const getAllProjectData = async () => {
@@ -32,99 +32,125 @@ export default function ViewProjects() {
     getAllProjectData();
   }, []);
 
-  const handleAddNewProject = async () => {
-    setShowAddNewProjectForm(false);
-    await getAllProjectData();
-    console.log("Successfully added project");
-  };
-
-  const handleDeleteProject = (id) => {
-    setProjectData(projectData.filter((project) => project.id !== id));
-    console.log("Deleted project with ID:", id);
-  };
-
   const filteredProjects = projectData.filter((project) =>
-    project.name.toLowerCase().includes(search.toLowerCase())
+    project.name.toLowerCase().includes(searchProject.toLowerCase())
   );
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const indexOfLastProject = currentPageProject * itemsPerPage;
+  const indexOfFirstProject = indexOfLastProject - itemsPerPage;
   const currentProjects = filteredProjects.slice(
-    indexOfFirstItem,
-    indexOfLastItem
+    indexOfFirstProject,
+    indexOfLastProject
   );
-  const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+  const totalPagesProject = Math.ceil(filteredProjects.length / itemsPerPage);
 
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+  const handlePageChangeProject = (pageNumber) => {
+    setCurrentPageProject(pageNumber);
   };
+  const GetTaskData = (index) => {
+    try {
+      console.log(projectData[index].tasks);
 
+      setTaskData(projectData[index].tasks);
+    } catch {
+      setTaskData([]);
+    }
+  };
   return (
     <div className="container mt-4">
-      <Card className="p-4 shadow">
-        <h2 className="mb-4">Project View</h2>
-        <div className="d-flex justify-content-between mb-4">
-          <Form.Control
-            type="text"
-            placeholder="Search by name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-25"
-          />
-          <Button
-            onClick={() => setShowAddNewProjectForm(!showAddNewProjectForm)}
-            variant="primary">
-            {showAddNewProjectForm ? "Close Form" : "Add New Project"}
-          </Button>
-        </div>
-        {showAddNewProjectForm && (
-          <AddNewProjectForm onSubmit={handleAddNewProject} />
-        )}
-
-        {currentProjects.length > 0 ? (
-          <>
-            <Table striped bordered hover className="mt-4">
+      <Row>
+        {/* Column for All Projects */}
+        <Col md={4}>
+          <Card className="p-4 shadow">
+            <h4>All Projects</h4>
+            <Form.Control
+              type="text"
+              placeholder="Search projects..."
+              value={searchProject}
+              onChange={(e) => setSearchProject(e.target.value)}
+              className="mb-3"
+            />
+            <Table striped bordered hover>
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
+                  <th>Project Name</th>
                   <th>Status</th>
-                  <th className="text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {currentProjects.map((project) => (
-                  <tr key={project.id}>
+                  <tr key={project.id} onClick={() => GetTaskData(project.id)}>
                     <td>{project.id}</td>
                     <td>{project.name}</td>
                     <td>{project.status}</td>
-                    <td className="text-center">
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDeleteProject(project.id)}>
-                        Delete
-                      </Button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
             </Table>
             <Pagination className="mt-3 justify-content-center">
-              {[...Array(totalPages)].map((_, index) => (
+              {[...Array(totalPagesProject)].map((_, index) => (
                 <Pagination.Item
                   key={index + 1}
-                  active={index + 1 === currentPage}
-                  onClick={() => handlePageChange(index + 1)}>
+                  active={index + 1 === currentPageProject}
+                  onClick={() => handlePageChangeProject(index + 1)}>
                   {index + 1}
                 </Pagination.Item>
               ))}
             </Pagination>
-          </>
-        ) : (
-          <p className="text-muted mt-4">No projects available</p>
-        )}
-      </Card>
+          </Card>
+        </Col>
+
+        {/* Column for All Tasks */}
+        <Col md={4}>
+          <Card className="p-4 shadow">
+            <h4>All Tasks</h4>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {taskData &&
+                  taskData.map((task, index) => (
+                    <tr key={task.name + index}>
+                      <td>{task}</td>
+                      <td>{task.description}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </Table>
+          </Card>
+        </Col>
+
+        {/* Column for Editing Task */}
+        <Col md={4}>
+          <Card className="p-4 shadow">
+            <h4>Edit Task</h4>
+            {selectedTask ? (
+              <Form>
+                <Form.Group>
+                  <Form.Label>Task Text</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={selectedTask.text}
+                    onChange={(e) =>
+                      setSelectedTask({ ...selectedTask, text: e.target.value })
+                    }
+                  />
+                </Form.Group>
+                <Button variant="success" className="mt-3">
+                  Save Changes
+                </Button>
+              </Form>
+            ) : (
+              <p>Select a task to edit</p>
+            )}
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

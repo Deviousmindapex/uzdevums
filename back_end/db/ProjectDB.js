@@ -19,31 +19,58 @@ const GetAllProjects = async () => {
 }
 
 const addNewProject = (name, email, tasks = null, template = null) => {
+    console.log(tasks);
 
-    return new Promise((resolve, reject) => {
-
+    return new Promise(async (resolve, reject) => {
         const pool = createPool("uzdevums");
-        pool.query("SELECT * FROM projects WHERE name = $1", [name], (err, result) => {
+
+        try {
+            // Check if project exists
+            const result = await pool.query("SELECT * FROM projects WHERE name = $1", [name]);
+            if (result.rows.length > 0) {
+                await pool.end();
+                return reject({ message: "Project already exists" });
+            }
+
+            // Insert new project
+            await pool.query(
+                "INSERT INTO projects (name,username,status,tasks,template) VALUES ($1,$2,$3,$4,$5)",
+                [name, email, "pending", tasks, template]
+            );
+
+            // Insert tasks if provided
+            if (tasks && tasks.length > 0) {
+                const taskQueries = tasks.map(task =>
+                    pool.query(
+                        "INSERT INTO tasks (task_name,template,description,status,username) VALUES ($1,$2,$3,$4,$5)",
+                        [task.name, null, task.description, "pending", email]
+                    )
+                );
+
+                await Promise.all(taskQueries); // Wait for all tasks to be inserted
+            }
+
+            await pool.end();
+            resolve("Successfully added");
+        } catch (err) {
+            await pool.end();
+            reject(err);
+        }
+    });
+};
+
+
+
+const getAllTasks = () => {
+    return new Promise((resolve, reject) => {
+        const pool = createPool("uzdevums");
+        pool.query("SELECT * FROM tasks", (err, result) => {
             if (err) {
                 pool.end()
                 reject(err)
             } else {
-                if (result.rows.length > 0) {
-                    pool.end()
-                    reject({ message: "Project already exists" })
-                } else {
-                    pool.query(
-                        "INSERT INTO projects (name,username,status,tasks,template) VALUES ($1,$2,$3,$4,$5)", [name, email, "pending", tasks, template], (err, results) => {
-                            if (err) {
-                                pool.end()
-                                reject(err)
-                            } else {
-                                pool.end()
-                                resolve("Succesfully add new project")
-                            }
-                        }
-                    )
-                }
+                pool.end()
+                resolve(result.rows)
             }
         })
     })
@@ -53,7 +80,4 @@ const addNewProject = (name, email, tasks = null, template = null) => {
 
 
 
-
-
-
-module.exports = { GetAllProjects, addNewProject };
+module.exports = { GetAllProjects, addNewProject, getAllTasks };

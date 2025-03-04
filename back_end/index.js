@@ -61,14 +61,25 @@ app.get('/api/GetAllProjects', async (req, res) => {
 })
 app.post('/api/AddNewProject', async (req, res) => {
     try {
+        console.log(req.body);
 
-        const resp = await Project_service.addNewProject(req.body.name, req.body.email)
+        const resp = await Project_service.addNewProject(req.body.name, req.body.email, req.body.tasks)
         console.log(resp);
 
         return res.json({ message: "Project added successfully" })
     } catch (error) {
         console.log(error);
         return res.status(400).json(error);
+    }
+
+})
+app.get('/api/GetAllTasks', async (req, res) => {
+    try {
+        const resp = await Project_service.getAllTasks()
+        return res.json({ data: resp })
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to get all tasks" });
     }
 
 })

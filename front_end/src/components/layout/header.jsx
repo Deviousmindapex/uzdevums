@@ -56,6 +56,9 @@ const Header = () => {
             <Link to="/view_projects" style={styles.link}>
               View projects
             </Link>
+            <Link to="/crudProject" style={styles.link}>
+              Create/Edit Project
+            </Link>
             <button onClick={handleLogout} style={styles.logoutButton}>
               Logout
             </button>
