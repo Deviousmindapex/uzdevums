@@ -94,9 +94,29 @@ const getAllTasks = () => {
         })
     })
 }
+const updateProjectTasks = (id, tasks) => {
+    return new Promise((resolve, reject) => {
+        const pool = createPool("uzdevums");
+        pool.query(
+            "UPDATE projects SET tasks = $1 WHERE id = $2",
+            [tasks, id],
+            (err, result) => {
+                if (err) {
+                    pool.end()
+                    reject(err)
+                } else {
+                    pool.end()
+                    resolve(result.rows)
+                }
+            }
+        )
+    })
+}
 
 
 
 
 
-module.exports = { GetAllProjects, addNewProject, getAllTasks };
+
+
+module.exports = { GetAllProjects, addNewProject, getAllTasks, updateProjectTasks };

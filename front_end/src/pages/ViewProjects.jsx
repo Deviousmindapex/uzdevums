@@ -25,11 +25,13 @@ export default function ViewProjects() {
   const [taskActive, setTaskActive] = useState(false);
   const [activeTaskRow, setActiveTaskRow] = useState(null);
   const [taskStatus, setTaskStatus] = useState("");
+  const [error, setError] = useState("");
+  const [updateCounter, setUpdateCounter] = useState(0);
   const getAllProjectData = async () => {
     try {
       const response = await ProjectService.GetAllProjects();
-      console.log(response);
       setProjectData(response.data);
+      return response.data;
     } catch (error) {
       console.error("Error fetching project data:", error);
     }
@@ -37,7 +39,11 @@ export default function ViewProjects() {
 
   useEffect(() => {
     getAllProjectData();
-  }, []);
+  }, []); // Only runs once on mount
+
+  useEffect(() => {
+    console.log("Updated projectData:", projectData);
+  }, [projectData, updateCounter]); // Logs only when projectData updates
 
   const filteredProjects = projectData.filter((project) =>
     project.name.toLowerCase().includes(searchProject.toLowerCase())
@@ -67,7 +73,7 @@ export default function ViewProjects() {
     }
   };
   const getSelectedTask = (task, id) => {
-    console.log(task);
+    console.log(JSON.parse(task));
     console.log(id);
     setTaskActive(true);
     setTaskStatus(JSON.parse(task).status);
@@ -81,9 +87,41 @@ export default function ViewProjects() {
       setAllTaskComment(JSON.parse(task).comment);
     }
   };
-  const handleUpdateComment = () => {
-    console.log(taskComment);
+  const handleUpdateComment = async () => {
+    const task = [];
+    projectData[activeProjectRow].tasks.map((obj) => {
+      task.push(JSON.parse(obj));
+    });
+    // console.log(taskComment);
     console.log(taskStatus);
+    // console.log(projectData[activeProjectRow]);
+    // console.log(task);
+
+    if (taskStatus === "completed" && !taskComment) {
+      return;
+    }
+    taskComment.length > 0
+      ? task[activeTaskRow].comment.push(taskComment)
+      : (task[activeTaskRow].comment = []);
+    task[activeTaskRow].status = taskStatus;
+    console.log(projectData[activeProjectRow].id);
+    try {
+      const resp = await ProjectService.UpdateProjectTask(
+        projectData[activeProjectRow].id,
+        task
+      );
+      console.log(task);
+
+      const updatedData = await getAllProjectData();
+      setProjectData([...updatedData]);
+      setUpdateCounter((prev) => prev + 1); // Forces a re-render
+      setTaskData(updatedData[activeProjectRow].tasks);
+      setAllTaskComment(
+        JSON.parse(updatedData[activeProjectRow].tasks[activeTaskRow]).comment
+      );
+    } catch (e) {
+      setError(e);
+    }
   };
   return (
     <div className="container mt-4">
@@ -187,39 +225,67 @@ export default function ViewProjects() {
             {taskActive ? (
               <>
                 <h4>Add Comment</h4>
-                {allTaskComment.length > 0 ? (
-                  allTaskComment.map((comment, index) => (
-                    <p key={index}>{comment}</p>
-                  ))
-                ) : (
-                  <Form>
-                    <Form.Group>
-                      <Form.Control
-                        as="textarea"
-                        ref={textareaRef}
-                        placeholder="Enter comment"
-                        onChange={(e) => setTaskComment(e.target.value)}
-                        rows={8}
-                      />
-                    </Form.Group>
-                    <Button
-                      variant="success"
-                      className="mt-3"
-                      onClick={handleUpdateComment}>
-                      Add Comment
-                    </Button>
-                    <DropdownButton title={taskStatus} id="dropdown-status">
-                      <Dropdown.Item key="pending">Pending</Dropdown.Item>
-                      <Dropdown.Item key="in_progress">
-                        in progress
-                      </Dropdown.Item>
-                      <Dropdown.Item key="completed">completed</Dropdown.Item>
-                    </DropdownButton>
-                  </Form>
-                )}
+
+                {/* Display existing comments or show "No comments" */}
+                <div
+                  className="mb-3 p-3 border rounded bg-light"
+                  style={{ maxHeight: "200px", overflowY: "auto" }}>
+                  {allTaskComment.length > 0 ? (
+                    allTaskComment.map((comment, index) => (
+                      <div
+                        key={index}
+                        className="p-2 mb-2 bg-white rounded shadow-sm">
+                        <p className="mb-0">{comment}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted text-center">No comments yet</p>
+                  )}
+                </div>
+
+                {/* Comment Input Form */}
+                <Form>
+                  <Form.Group>
+                    <Form.Control
+                      as="textarea"
+                      ref={textareaRef}
+                      placeholder="Enter comment"
+                      onChange={(e) => setTaskComment(e.target.value)}
+                      rows={8}
+                    />
+                  </Form.Group>
+
+                  {error && <p className="text-danger text-sm">{error}</p>}
+
+                  <Button
+                    variant="success"
+                    className="mt-3"
+                    onClick={handleUpdateComment}>
+                    Update
+                  </Button>
+
+                  {/* Task Status Dropdown */}
+                  <DropdownButton title={taskStatus} id="dropdown-status">
+                    <Dropdown.Item
+                      key="pending"
+                      onClick={() => setTaskStatus("pending")}>
+                      Pending
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      key="in_progress"
+                      onClick={() => setTaskStatus("in_progress")}>
+                      In Progress
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      key="completed"
+                      onClick={() => setTaskStatus("completed")}>
+                      Completed
+                    </Dropdown.Item>
+                  </DropdownButton>
+                </Form>
               </>
             ) : (
-              <p>Choose task</p>
+              <p>Choose a task</p>
             )}
           </Card>
         </Col>

@@ -83,6 +83,17 @@ app.get('/api/GetAllTasks', async (req, res) => {
     }
 
 })
+app.post('/api/UpdateProjectTask', async (req, res) => {
+    try {
+        console.log(req.body, "body");
+        const resp = await Project_service.updateProjectTasks(req.body.id, req.body.task)
+        return res.json()
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to update project task" });
+    }
+
+})
 app.listen(3001, () => {
     console.log('Server running on http://localhost:3000');
 });

@@ -31,5 +31,15 @@ export const ProjectService = {
             return [];
         }
 
+    },
+    async UpdateProjectTask(id, task) {
+        try {
+            const response = await axios.post(`${API_URL}/UpdateProjectTask`, { id, task });
+            return response
+        } catch (error) {
+            console.error(error);
+            return error;
+
+        }
     }
 }
