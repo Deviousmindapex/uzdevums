@@ -20,7 +20,7 @@ export default function ViewProjects() {
   const [allTaskComment, setAllTaskComment] = useState([]);
   const [projectStatus, setProjectStatus] = useState("pending");
   const [taskComment, setTaskComment] = useState("");
-
+  const [taskActive, setTaskActive] = useState(false);
   const getAllProjectData = async () => {
     try {
       const response = await ProjectService.GetAllProjects();
@@ -65,6 +65,7 @@ export default function ViewProjects() {
   const getSelectedTask = (task, id) => {
     console.log(task);
     console.log(id);
+    setTaskActive(!taskActive);
     if (task.comment) {
       setAllTaskComment(task.comment);
     }
@@ -144,7 +145,7 @@ export default function ViewProjects() {
                       <tr
                         key={index}
                         onClick={() => getSelectedTask(task, index)}>
-                        <td>{tasks.name}</td>
+                        <td>{tasks.task_name}</td>
                         <td>{tasks.description}</td>
                       </tr>
                     );
@@ -157,22 +158,29 @@ export default function ViewProjects() {
         {/* Column for Editing Task */}
         <Col md={4}>
           <Card className="p-4 shadow">
-            <h4>Add comment</h4>
-            {allTaskComment.length > 0 ? (
-              <p>{allTaskComment}</p>
+            {taskActive ? (
+              <>
+                <h4>Add Comment</h4>
+                {allTaskComment.length > 0 ? (
+                  allTaskComment.map((comment, index) => (
+                    <p key={index}>{comment}</p>
+                  ))
+                ) : (
+                  <Form>
+                    <Form.Group>
+                      <Form.Control
+                        placeholder="Enter comment"
+                        onChange={(e) => setTaskComment(e.target.value)}
+                      />
+                    </Form.Group>
+                    <Button variant="success" className="mt-3">
+                      Add Comment
+                    </Button>
+                  </Form>
+                )}
+              </>
             ) : (
-              <Form>
-                <Form.Group>
-                  <Form.Control
-                    placeholder="Enter comment"
-                    onChange={(e) =>
-                      setTaskComment(e.target.value)
-                    }></Form.Control>
-                </Form.Group>
-                <Button variant="success" className="mt-3">
-                  Add comment
-                </Button>
-              </Form>
+              <p>Choose task</p>
             )}
           </Card>
         </Col>

@@ -11,17 +11,23 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
   const [ProjectName, setProjectName] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState("");
   const [selectedTasks, setSelectedTasks] = useState([]);
+  const [selectedTasksID, setSelectedTasksID] = useState([])
   const [error, setError] = useState("");
   const [taskList, setTaskList] = useState([{ name: "", description: "" }]);
 
   const templates = ["Template 1", "Template 2", "Template 3"]; // Example template data
   // const tasks = ["Task A", "Task B", "Task C"]; // Example task data
   const tasks = AllTasks; // Example task data
-  const handleTaskSelection = (task) => {
+  const handleTaskSelection = (task, index) => {
     setSelectedTasks((prevTasks) =>
       prevTasks.includes(task)
         ? prevTasks.filter((t) => t !== task)
         : [...prevTasks, task]
+    );
+    setSelectedTasksID((prevTasks) =>
+      prevTasks.includes(index)
+        ? prevTasks.filter((t) => t !== index)
+        : [...prevTasks, index]
     );
   };
 
@@ -44,11 +50,28 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
     }
     try {
       // 
+      console.log(taskList);
+
+      let dbTasks = []
+      console.log(AllTasks);
+
+      if (selectedTasks.length > 0) {
+        for (let i = 0; i < selectedTasksID.length; i++) {
+          dbTasks.push(AllTasks[i])
+        }
+      } else {
+
+        dbTasks = [...taskList]
+      }
+
+      console.log(dbTasks);
+
+
       const response = await ProjectService.AddNewProject(
         ProjectName,
         storageService.getItem("username"),
         // selectedTemplate,
-        taskList
+        dbTasks
       );
       console.log(response);
       onSubmit();
@@ -92,7 +115,7 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
         >
           {tasks.map((task, index) => (
 
-            <Dropdown.Item key={index} onClick={() => handleTaskSelection(task.task_name)}>
+            <Dropdown.Item key={index} onClick={() => handleTaskSelection(task.task_name, index)}>
               {selectedTasks.includes(task.task_name) ? "✔ " : ""}{task.task_name}
             </Dropdown.Item>
           ))}
