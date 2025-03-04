@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Row, Col } from "react-bootstrap";
+import { Card, Row, Col, DropdownButton, Dropdown } from "react-bootstrap";
 import { storageService } from "../services/storageService";
 import { ProjectService } from "../services/ProjectService";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Pagination from "react-bootstrap/Pagination";
+import { useRef } from "react";
 
 export default function ViewProjects() {
+  const textareaRef = useRef(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
   const [projectData, setProjectData] = useState([]);
@@ -21,6 +23,8 @@ export default function ViewProjects() {
   const [projectStatus, setProjectStatus] = useState("pending");
   const [taskComment, setTaskComment] = useState("");
   const [taskActive, setTaskActive] = useState(false);
+  const [activeTaskRow, setActiveTaskRow] = useState(null);
+  const [taskStatus, setTaskStatus] = useState("");
   const getAllProjectData = async () => {
     try {
       const response = await ProjectService.GetAllProjects();
@@ -65,10 +69,21 @@ export default function ViewProjects() {
   const getSelectedTask = (task, id) => {
     console.log(task);
     console.log(id);
-    setTaskActive(!taskActive);
-    if (task.comment) {
-      setAllTaskComment(task.comment);
+    setTaskActive(true);
+    setTaskStatus(JSON.parse(task).status);
+
+    setActiveTaskRow(id);
+    setTaskComment("");
+    if (textareaRef.current) {
+      textareaRef.current.value = "";
     }
+    if (JSON.parse(task).comment) {
+      setAllTaskComment(JSON.parse(task).comment);
+    }
+  };
+  const handleUpdateComment = () => {
+    console.log(taskComment);
+    console.log(taskStatus);
   };
   return (
     <div className="container mt-4">
@@ -97,7 +112,7 @@ export default function ViewProjects() {
                   <tr
                     key={project.id}
                     style={
-                      activeProjectRow === project.id
+                      activeProjectRow === index
                         ? {
                             backgroundColor: "#ffcccb",
                             color: "#000",
@@ -135,6 +150,7 @@ export default function ViewProjects() {
                 <tr>
                   <th>Task</th>
                   <th>Description</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -144,9 +160,19 @@ export default function ViewProjects() {
                     return (
                       <tr
                         key={index}
-                        onClick={() => getSelectedTask(task, index)}>
+                        onClick={() => getSelectedTask(task, index)}
+                        style={
+                          activeTaskRow === index
+                            ? {
+                                backgroundColor: "#ffcccb",
+                                color: "#000",
+                                fontWeight: "bold",
+                              }
+                            : {}
+                        }>
                         <td>{tasks.task_name}</td>
                         <td>{tasks.description}</td>
+                        <td>{tasks.status}</td>
                       </tr>
                     );
                   })}
@@ -169,13 +195,26 @@ export default function ViewProjects() {
                   <Form>
                     <Form.Group>
                       <Form.Control
+                        as="textarea"
+                        ref={textareaRef}
                         placeholder="Enter comment"
                         onChange={(e) => setTaskComment(e.target.value)}
+                        rows={8}
                       />
                     </Form.Group>
-                    <Button variant="success" className="mt-3">
+                    <Button
+                      variant="success"
+                      className="mt-3"
+                      onClick={handleUpdateComment}>
                       Add Comment
                     </Button>
+                    <DropdownButton title={taskStatus} id="dropdown-status">
+                      <Dropdown.Item key="pending">Pending</Dropdown.Item>
+                      <Dropdown.Item key="in_progress">
+                        in progress
+                      </Dropdown.Item>
+                      <Dropdown.Item key="completed">completed</Dropdown.Item>
+                    </DropdownButton>
                   </Form>
                 )}
               </>
