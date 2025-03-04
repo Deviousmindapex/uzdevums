@@ -24,7 +24,6 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
         : [...prevTasks, task]
     );
   };
-  console.log(AllTasks);
 
   const handleAddTaskField = () => {
     setTaskList([...taskList, { name: "", description: "" }]);

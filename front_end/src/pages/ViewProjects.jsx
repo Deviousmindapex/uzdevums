@@ -13,10 +13,13 @@ export default function ViewProjects() {
   const navigate = useNavigate();
   const [projectData, setProjectData] = useState([]);
   const [taskData, setTaskData] = useState([]);
-  const [selectedTask, setSelectedTask] = useState(null);
   const [searchProject, setSearchProject] = useState("");
   const [currentPageProject, setCurrentPageProject] = useState(1);
   const itemsPerPage = 5;
+  const [activeProjectRow, setActiveProjectRow] = useState(null);
+  const [allTaskComment, setAllTaskComment] = useState([]);
+  const [projectStatus, setProjectStatus] = useState("pending");
+  const [taskComment, setTaskComment] = useState("");
 
   const getAllProjectData = async () => {
     try {
@@ -49,11 +52,21 @@ export default function ViewProjects() {
   };
   const GetTaskData = (index) => {
     try {
-      console.log(projectData[index].tasks);
+      console.log(index);
+      console.log(projectData);
 
       setTaskData(projectData[index].tasks);
+      setActiveProjectRow(index);
     } catch {
       setTaskData([]);
+      setActiveProjectRow(index);
+    }
+  };
+  const getSelectedTask = (task, id) => {
+    console.log(task);
+    console.log(id);
+    if (task.comment) {
+      setAllTaskComment(task.comment);
     }
   };
   return (
@@ -79,8 +92,19 @@ export default function ViewProjects() {
                 </tr>
               </thead>
               <tbody>
-                {currentProjects.map((project) => (
-                  <tr key={project.id} onClick={() => GetTaskData(project.id)}>
+                {currentProjects.map((project, index) => (
+                  <tr
+                    key={project.id}
+                    style={
+                      activeProjectRow === project.id
+                        ? {
+                            backgroundColor: "#ffcccb",
+                            color: "#000",
+                            fontWeight: "bold",
+                          }
+                        : {}
+                    }
+                    onClick={() => GetTaskData(index)}>
                     <td>{project.id}</td>
                     <td>{project.name}</td>
                     <td>{project.status}</td>
@@ -114,12 +138,17 @@ export default function ViewProjects() {
               </thead>
               <tbody>
                 {taskData &&
-                  taskData.map((task, index) => (
-                    <tr key={task.name + index}>
-                      <td>{task}</td>
-                      <td>{task.description}</td>
-                    </tr>
-                  ))}
+                  taskData.map((task, index) => {
+                    const tasks = JSON.parse(task);
+                    return (
+                      <tr
+                        key={index}
+                        onClick={() => getSelectedTask(task, index)}>
+                        <td>{tasks.name}</td>
+                        <td>{tasks.description}</td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </Table>
           </Card>
@@ -128,25 +157,22 @@ export default function ViewProjects() {
         {/* Column for Editing Task */}
         <Col md={4}>
           <Card className="p-4 shadow">
-            <h4>Edit Task</h4>
-            {selectedTask ? (
+            <h4>Add comment</h4>
+            {allTaskComment.length > 0 ? (
+              <p>{allTaskComment}</p>
+            ) : (
               <Form>
                 <Form.Group>
-                  <Form.Label>Task Text</Form.Label>
                   <Form.Control
-                    type="text"
-                    value={selectedTask.text}
+                    placeholder="Enter comment"
                     onChange={(e) =>
-                      setSelectedTask({ ...selectedTask, text: e.target.value })
-                    }
-                  />
+                      setTaskComment(e.target.value)
+                    }></Form.Control>
                 </Form.Group>
                 <Button variant="success" className="mt-3">
-                  Save Changes
+                  Add comment
                 </Button>
               </Form>
-            ) : (
-              <p>Select a task to edit</p>
             )}
           </Card>
         </Col>

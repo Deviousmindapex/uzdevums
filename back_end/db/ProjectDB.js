@@ -18,7 +18,7 @@ const GetAllProjects = async () => {
     })
 }
 
-const addNewProject = (name, email, tasks = null, template = null) => {
+const addNewProject = (name, email, tasks = null, template = null, comment = nul) => {
     console.log(tasks);
 
     return new Promise(async (resolve, reject) => {
@@ -42,8 +42,8 @@ const addNewProject = (name, email, tasks = null, template = null) => {
             if (tasks && tasks.length > 0) {
                 const taskQueries = tasks.map(task =>
                     pool.query(
-                        "INSERT INTO tasks (task_name,template,description,status,username) VALUES ($1,$2,$3,$4,$5)",
-                        [task.name, null, task.description, "pending", email]
+                        "INSERT INTO tasks (task_name,template,description,status,username,comment) VALUES ($1,$2,$3,$4,$5,$6)",
+                        [task.name, null, task.description, "pending", email, comment]
                     )
                 );
 
