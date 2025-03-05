@@ -30,6 +30,7 @@ export default function ViewProjects() {
   const [updateCounter, setUpdateCounter] = useState(0);
   const [asignTo, setAsignTo] = useState("None");
   const [users, setUsers] = useState([]);
+  const [searchTask, setSearchTask] = useState("");
   const getAllProjectData = async () => {
     try {
       const response = await ProjectService.GetAllProjects();
@@ -58,6 +59,16 @@ export default function ViewProjects() {
     indexOfFirstProject,
     indexOfLastProject
   );
+
+  const filteredTasks = taskData.filter((task) => {
+    const tasks = typeof task === "string" ? JSON.parse(task) : task;
+    return (
+      tasks.task_name.toLowerCase().includes(searchTask.toLowerCase()) ||
+      tasks.description.toLowerCase().includes(searchTask.toLowerCase()) ||
+      tasks.status.toLowerCase().includes(searchTask.toLowerCase()) ||
+      tasks.responsible.toLowerCase().includes(searchTask.toLowerCase())
+    );
+  });
   const totalPagesProject = Math.ceil(filteredProjects.length / itemsPerPage);
 
   const handlePageChangeProject = (pageNumber) => {
@@ -134,186 +145,178 @@ export default function ViewProjects() {
     }
   };
   return (
-    <div className="container mt-4">
-      <Row>
-        {/* Column for All Projects */}
-        <Col md={4}>
-          <Card className="p-4 shadow">
-            <h4>All Projects</h4>
-            <Form.Control
-              type="text"
-              placeholder="Search projects..."
-              value={searchProject}
-              onChange={(e) => setSearchProject(e.target.value)}
-              className="mb-3"
-            />
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Project Name</th>
-                  <th>Status</th>
+    <Row className="g-3">
+      {/* Column for All Projects */}
+      <Col md={4}>
+        <Card className="p-3 shadow">
+          <h4>All Projects</h4>
+          <Form.Control
+            type="text"
+            placeholder="Search projects..."
+            value={searchProject}
+            onChange={(e) => setSearchProject(e.target.value)}
+            className="mb-3"
+          />
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Project Name</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentProjects.map((project, index) => (
+                <tr
+                  key={project.id}
+                  style={
+                    activeProjectRow === index
+                      ? {
+                          backgroundColor: "#ffcccb",
+                          color: "#000",
+                          fontWeight: "bold",
+                        }
+                      : {}
+                  }
+                  onClick={() => GetTaskData(index)}>
+                  <td>{project.id}</td>
+                  <td>{project.name}</td>
+                  <td>{project.status}</td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentProjects.map((project, index) => (
-                  <tr
-                    key={project.id}
-                    style={
-                      activeProjectRow === index
-                        ? {
-                            backgroundColor: "#ffcccb",
-                            color: "#000",
-                            fontWeight: "bold",
-                          }
-                        : {}
-                    }
-                    onClick={() => GetTaskData(index)}>
-                    <td>{project.id}</td>
-                    <td>{project.name}</td>
-                    <td>{project.status}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-            <Pagination className="mt-3 justify-content-center">
-              {[...Array(totalPagesProject)].map((_, index) => (
-                <Pagination.Item
-                  key={index + 1}
-                  active={index + 1 === currentPageProject}
-                  onClick={() => handlePageChangeProject(index + 1)}>
-                  {index + 1}
-                </Pagination.Item>
               ))}
-            </Pagination>
-          </Card>
-        </Col>
+            </tbody>
+          </Table>
+          <Pagination className="mt-3 justify-content-center">
+            {[...Array(totalPagesProject)].map((_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPageProject}
+                onClick={() => handlePageChangeProject(index + 1)}>
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+        </Card>
+      </Col>
 
-        {/* Column for All Tasks */}
-        <Col md={6}>
-          <Card className="p-4 shadow">
-            <h4>All Tasks</h4>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Task</th>
-                  <th>Description</th>
-                  <th>Status</th>
-                  <th>Responsible</th>
-                </tr>
-              </thead>
-              <tbody>
-                {taskData &&
-                  taskData.map((task, index) => {
-                    const tasks = JSON.parse(task);
-                    console.log(tasks);
+      {/* Column for All Tasks */}
+      <Col md={4}>
+        <Card className="p-3 shadow">
+          <h4>All Tasks</h4>
+          <Form.Control
+            type="text"
+            placeholder="Search tasks..."
+            value={searchTask}
+            onChange={(e) => setSearchTask(e.target.value)}
+            className="mb-3"
+          />
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Responsible</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredTasks.map((task, index) => {
+                const tasks =
+                  typeof task === "string" ? JSON.parse(task) : task;
+                return (
+                  <tr key={index}>
+                    <td>{tasks.task_name}</td>
+                    <td>{tasks.description}</td>
+                    <td>{tasks.status}</td>
+                    <td>{tasks.responsible}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
+        </Card>
+      </Col>
 
-                    return (
-                      <tr
-                        key={index}
-                        onClick={() => getSelectedTask(task, index)}
-                        style={
-                          activeTaskRow === index
-                            ? {
-                                backgroundColor: "#ffcccb",
-                                color: "#000",
-                                fontWeight: "bold",
-                              }
-                            : {}
-                        }>
-                        <td>{tasks.task_name}</td>
-                        <td>{tasks.description}</td>
-                        <td>{tasks.status}</td>
-                        <td>{tasks.responsible}</td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </Table>
-          </Card>
-        </Col>
+      {/* Column for Editing Task */}
+      <Col md={4}>
+        <Card className="p-3 shadow">
+          {taskActive ? (
+            <>
+              <h4>Add Comment</h4>
 
-        {/* Column for Editing Task */}
-        <Col md={4}>
-          <Card className="p-4 shadow">
-            {taskActive ? (
-              <>
-                <h4>Add Comment</h4>
+              {/* Display existing comments or show "No comments" */}
+              <div
+                className="mb-3 p-3 border rounded bg-light"
+                style={{ maxHeight: "200px", overflowY: "auto" }}>
+                {allTaskComment.length > 0 ? (
+                  allTaskComment.map((comment, index) => (
+                    <div
+                      key={index}
+                      className="p-2 mb-2 bg-white rounded shadow-sm">
+                      <p className="mb-0">{comment}</p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-muted text-center">No comments yet</p>
+                )}
+              </div>
 
-                {/* Display existing comments or show "No comments" */}
-                <div
-                  className="mb-3 p-3 border rounded bg-light"
-                  style={{ maxHeight: "200px", overflowY: "auto" }}>
-                  {allTaskComment.length > 0 ? (
-                    allTaskComment.map((comment, index) => (
-                      <div
-                        key={index}
-                        className="p-2 mb-2 bg-white rounded shadow-sm">
-                        <p className="mb-0">{comment}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted text-center">No comments yet</p>
-                  )}
-                </div>
+              {/* Comment Input Form */}
+              <Form>
+                <Form.Group>
+                  <Form.Control
+                    as="textarea"
+                    ref={textareaRef}
+                    placeholder="Enter comment"
+                    onChange={(e) => setTaskComment(e.target.value)}
+                    rows={8}
+                  />
+                </Form.Group>
 
-                {/* Comment Input Form */}
-                <Form>
-                  <Form.Group>
-                    <Form.Control
-                      as="textarea"
-                      ref={textareaRef}
-                      placeholder="Enter comment"
-                      onChange={(e) => setTaskComment(e.target.value)}
-                      rows={8}
-                    />
-                  </Form.Group>
+                {error && <p className="text-danger text-sm">{error}</p>}
 
-                  {error && <p className="text-danger text-sm">{error}</p>}
+                <Button
+                  variant="success"
+                  className="mt-3"
+                  onClick={handleUpdateComment}>
+                  Update
+                </Button>
 
-                  <Button
-                    variant="success"
-                    className="mt-3"
-                    onClick={handleUpdateComment}>
-                    Update
-                  </Button>
-
-                  {/* Task Status Dropdown */}
-                  <DropdownButton title={taskStatus} id="dropdown-status">
+                {/* Task Status Dropdown */}
+                <DropdownButton title={taskStatus} id="dropdown-status">
+                  <Dropdown.Item
+                    key="pending"
+                    onClick={() => setTaskStatus("pending")}>
+                    Pending
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    key="in_progress"
+                    onClick={() => setTaskStatus("in_progress")}>
+                    In Progress
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    key="completed"
+                    onClick={() => setTaskStatus("completed")}>
+                    Completed
+                  </Dropdown.Item>
+                </DropdownButton>
+                <Form.Label>Asign to</Form.Label>
+                <DropdownButton title={asignTo} id="dropdown-status">
+                  {users.map((data, key) => (
                     <Dropdown.Item
-                      key="pending"
-                      onClick={() => setTaskStatus("pending")}>
-                      Pending
+                      key={key}
+                      onClick={() => setAsignTo(data.username)}>
+                      {data.username}
                     </Dropdown.Item>
-                    <Dropdown.Item
-                      key="in_progress"
-                      onClick={() => setTaskStatus("in_progress")}>
-                      In Progress
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      key="completed"
-                      onClick={() => setTaskStatus("completed")}>
-                      Completed
-                    </Dropdown.Item>
-                  </DropdownButton>
-                  <Form.Label>Asign to</Form.Label>
-                  <DropdownButton title={asignTo} id="dropdown-status">
-                    {users.map((data, key) => (
-                      <Dropdown.Item
-                        key={key}
-                        onClick={() => setAsignTo(data.username)}>
-                        {data.username}
-                      </Dropdown.Item>
-                    ))}
-                  </DropdownButton>
-                </Form>
-              </>
-            ) : (
-              <p>Choose a task</p>
-            )}
-          </Card>
-        </Col>
-      </Row>
-    </div>
+                  ))}
+                </DropdownButton>
+              </Form>
+            </>
+          ) : (
+            <p>Choose a task</p>
+          )}
+        </Card>
+      </Col>
+    </Row>
   );
 }
