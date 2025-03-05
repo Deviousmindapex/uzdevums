@@ -8,6 +8,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Pagination from "react-bootstrap/Pagination";
 import { useRef } from "react";
+import { getAllUsers } from "../services/authService";
 
 export default function ViewProjects() {
   const textareaRef = useRef(null);
@@ -27,6 +28,8 @@ export default function ViewProjects() {
   const [taskStatus, setTaskStatus] = useState("");
   const [error, setError] = useState("");
   const [updateCounter, setUpdateCounter] = useState(0);
+  const [asignTo, setAsignTo] = useState("None");
+  const [users, setUsers] = useState([]);
   const getAllProjectData = async () => {
     try {
       const response = await ProjectService.GetAllProjects();
@@ -72,12 +75,17 @@ export default function ViewProjects() {
       setActiveProjectRow(index);
     }
   };
-  const getSelectedTask = (task, id) => {
+  const getSelectedTask = async (task, id) => {
+    try {
+      const resp = await getAllUsers();
+      console.log(resp.data);
+      setUsers(resp.data);
+    } catch {}
     console.log(JSON.parse(task));
     console.log(id);
     setTaskActive(true);
     setTaskStatus(JSON.parse(task).status);
-
+    setAsignTo(JSON.parse(task).responsible);
     setActiveTaskRow(id);
     setTaskComment("");
     if (textareaRef.current) {
@@ -104,6 +112,8 @@ export default function ViewProjects() {
       ? task[activeTaskRow].comment.push(taskComment)
       : (task[activeTaskRow].comment = []);
     task[activeTaskRow].status = taskStatus;
+    task[activeTaskRow].responsible = asignTo;
+
     console.log(projectData[activeProjectRow].id);
     try {
       const resp = await ProjectService.UpdateProjectTask(
@@ -180,7 +190,7 @@ export default function ViewProjects() {
         </Col>
 
         {/* Column for All Tasks */}
-        <Col md={4}>
+        <Col md={6}>
           <Card className="p-4 shadow">
             <h4>All Tasks</h4>
             <Table striped bordered hover>
@@ -189,12 +199,15 @@ export default function ViewProjects() {
                   <th>Task</th>
                   <th>Description</th>
                   <th>Status</th>
+                  <th>Responsible</th>
                 </tr>
               </thead>
               <tbody>
                 {taskData &&
                   taskData.map((task, index) => {
                     const tasks = JSON.parse(task);
+                    console.log(tasks);
+
                     return (
                       <tr
                         key={index}
@@ -211,6 +224,7 @@ export default function ViewProjects() {
                         <td>{tasks.task_name}</td>
                         <td>{tasks.description}</td>
                         <td>{tasks.status}</td>
+                        <td>{tasks.responsible}</td>
                       </tr>
                     );
                   })}
@@ -281,6 +295,16 @@ export default function ViewProjects() {
                       onClick={() => setTaskStatus("completed")}>
                       Completed
                     </Dropdown.Item>
+                  </DropdownButton>
+                  <Form.Label>Asign to</Form.Label>
+                  <DropdownButton title={asignTo} id="dropdown-status">
+                    {users.map((data, key) => (
+                      <Dropdown.Item
+                        key={key}
+                        onClick={() => setAsignTo(data.username)}>
+                        {data.username}
+                      </Dropdown.Item>
+                    ))}
                   </DropdownButton>
                 </Form>
               </>

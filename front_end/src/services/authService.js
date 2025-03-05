@@ -36,3 +36,13 @@ export async function checkIfActive(email) {
         throw new Error(error.response?.data?.message || 'checkIfActive failed');
     }
 }
+export async function getAllUsers() {
+    try {
+        const response = await axios.get(`${API_URL}/GetAllUsers`);
+        return response;
+    } catch (error) {
+        console.log("getAllUsers error", error);
+        throw new Error(error.response?.data?.message || 'getAllUsers failed');
+    }
+
+}

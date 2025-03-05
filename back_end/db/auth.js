@@ -66,6 +66,20 @@ const checkIfActive = (email) => {
 
     })
 };
+const getAllUsernames = () => {
+    return new Promise((resolve, reject) => {
+        const pool = createPool("uzdevums"); // Create pool for the given database
+        pool.query("SELECT username FROM users", (err, results) => {
+            if (err) {
+                reject(err)
+            } else {
+                resolve(results.rows);
+            }
+            pool.end();// Close the pool
+        });
+    });
 
 
-module.exports = { login, logOut, checkIfActive };
+}
+
+module.exports = { login, logOut, checkIfActive, getAllUsernames };

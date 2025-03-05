@@ -94,6 +94,16 @@ app.post('/api/UpdateProjectTask', async (req, res) => {
     }
 
 })
+app.get('/api/GetAllUsers', async (req, res) => {
+    try {
+        const resp = await auth_service.getAllUsernames()
+        return res.json(resp)
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to get all users" });
+    }
+
+})
 app.listen(3001, () => {
     console.log('Server running on http://localhost:3000');
 });

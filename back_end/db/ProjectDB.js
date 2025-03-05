@@ -48,13 +48,13 @@ const addNewProject = (name, email, tasks = null, template = null, comment = nul
                                 "INSERT INTO tasks (task_name,template,description,status,username,comment) VALUES ($1,$2,$3,$4,$5,$6)",
                                 [task.name, null, task.description, "pending", email, comment]
                             )
-                            allTasks.push({ task_name: task.name, template: null, description: task.description, status: "pending", comment: [] })
+                            allTasks.push({ task_name: task.name, template: null, description: task.description, status: "pending", comment: [], responsible: task.responsible })
                         } else {
-                            allTasks.push({ task_name: task.task_name, template: null, description: task.description, status: "pending", comment: [] })
+                            allTasks.push({ task_name: task.task_name, template: null, description: task.description, status: "pending", comment: [], responsible: task.responsible })
 
                         }
                     } catch {
-                        allTasks.push({ task_name: task.name, template: null, description: task.description, status: "pending", comment: [] })
+                        allTasks.push({ task_name: task.name, template: null, description: task.description, status: "pending", comment: [], responsible: task.responsible })
 
                     }
 
