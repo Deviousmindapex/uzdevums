@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import Header from "./components/layout/header";
 import ViewProjects from "./pages/ViewProjects";
 import ProjectList from "./pages/CRUDproject";
+import CreateProjectTemplateView from "./pages/CreateProjectTemplateView";
 export default function App() {
   return (
     <Router>
@@ -13,6 +14,10 @@ export default function App() {
         <Route path="/view_projects" element={<ViewProjects />} />
         <Route path="/crudProject" element={<ProjectList />}></Route>
         <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/createProjectTemplates"
+          element={<CreateProjectTemplateView />}
+        />
       </Routes>
     </Router>
   );

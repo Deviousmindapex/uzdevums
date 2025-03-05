@@ -224,7 +224,18 @@ export default function ViewProjects() {
                 const tasks =
                   typeof task === "string" ? JSON.parse(task) : task;
                 return (
-                  <tr key={index}>
+                  <tr
+                    key={index}
+                    onClick={() => getSelectedTask(task, index)}
+                    style={
+                      activeTaskRow === index
+                        ? {
+                            backgroundColor: "#ffcccb",
+                            color: "#000",
+                            fontWeight: "bold",
+                          }
+                        : {}
+                    }>
                     <td>{tasks.task_name}</td>
                     <td>{tasks.description}</td>
                     <td>{tasks.status}</td>
