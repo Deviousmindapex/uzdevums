@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:3001/api'; // Update this URL if needed
+const API_URL = 'http://localhost:3010/api'; // Update this URL if needed
 
 export async function loginUser(email, password) {
     try {

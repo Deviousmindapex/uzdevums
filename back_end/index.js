@@ -61,9 +61,8 @@ app.get('/api/GetAllProjects', async (req, res) => {
 })
 app.post('/api/AddNewProject', async (req, res) => {
     try {
-        console.log(req.body);
 
-        const resp = await Project_service.addNewProject(req.body.name, req.body.email, req.body.tasks)
+        const resp = await Project_service.addNewProject(req.body.name, req.body.email, req.body.tasks, req.body.template)
         console.log(resp);
 
         return res.json({ message: "Project added successfully" })
@@ -104,7 +103,26 @@ app.get('/api/GetAllUsers', async (req, res) => {
     }
 
 })
-app.listen(3001, () => {
+app.post('/api/UpdateOrEditTemplate', async (req, res) => {
+    try {
+        console.log(req.body);
+        const resp = await Project_service.updateOrEditTemplate(req.body.action, req.body.template)
+        return res.json()
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to update or edit template" });
+    }
+})
+app.get('/api/GetAllTemplates', async (req, res) => {
+    try {
+        const resp = await Project_service.GetAllTemplates()
+        return res.json(resp)
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({ message: "Failed to get all templates" });
+    }
+})
+app.listen(3010, () => {
     console.log('Server running on http://localhost:3000');
 });
 

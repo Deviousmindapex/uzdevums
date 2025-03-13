@@ -7,17 +7,20 @@ import Form from "react-bootstrap/Form";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
-export default function AddNewProjectForm({ onSubmit, AllTasks }) {
+export default function AddNewProjectForm({ onSubmit, AllTasks, AllTemplates }) {
   const [ProjectName, setProjectName] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [selectedTasksID, setSelectedTasksID] = useState([])
   const [error, setError] = useState("");
   const [taskList, setTaskList] = useState([{ name: "", description: "" }]);
+  const [selectedTemplateID, setSelectedTemplateID] = useState(null)
 
-  const templates = ["Template 1", "Template 2", "Template 3"]; // Example template data
+  const templates = AllTemplates; // Example template data
   // const tasks = ["Task A", "Task B", "Task C"]; // Example task data
   const tasks = AllTasks; // Example task data
+  console.log(templates);
+
   const handleTaskSelection = (task, index) => {
     setSelectedTasks((prevTasks) =>
       prevTasks.includes(task)
@@ -30,7 +33,27 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
         : [...prevTasks, index]
     );
   };
+  const handleTemplateSelection = (template, index) => {
+    // setSelectedTemplate((prevTasks) =>
+    //   prevTasks.includes(template)
+    //     ? prevTasks.filter((t) => t !== template)
+    //     : [...prevTasks, template]
+    // );
+    // setSelectedTemplateID((prevTasks) =>
+    //   prevTasks.includes(index)
+    //     ? prevTasks.filter((t) => t !== index)
+    //     : [...prevTasks, index]
+    // );
+    if (selectedTemplate === template) {
+      setSelectedTemplateID(null)
+      setSelectedTemplate(null)
 
+    } else {
+      setSelectedTemplateID(templates[index].id)
+      setSelectedTemplate(template)
+
+    }
+  };
   const handleAddTaskField = () => {
     setTaskList([...taskList, { name: "", description: "" }]);
   };
@@ -44,16 +67,19 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
     e.preventDefault();
     setError("");
 
+
     if (!ProjectName) {
       setError("Project name can't be empty");
       return;
     }
+
+
+
+
     try {
       // 
-      console.log(taskList);
 
       let dbTasks = []
-      console.log(AllTasks);
 
       if (selectedTasks.length > 0) {
         for (let i = 0; i < selectedTasksID.length; i++) {
@@ -61,17 +87,13 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
         }
       } else {
 
-        dbTasks = [...taskList]
+        dbTasks = null
       }
-
-      console.log(dbTasks);
-
-
       const response = await ProjectService.AddNewProject(
         ProjectName,
         storageService.getItem("username"),
-        // selectedTemplate,
-        dbTasks
+        dbTasks,
+        selectedTemplateID,
       );
       console.log(response);
       onSubmit();
@@ -98,11 +120,10 @@ export default function AddNewProjectForm({ onSubmit, AllTasks }) {
         title={selectedTemplate || "Select Template"}
         className="mb-3">
         {templates.map((template, index) => (
-          <Dropdown.Item
-            key={index}
-            onClick={() => setSelectedTemplate(template)}>
-            {template}
+          <Dropdown.Item key={index} onClick={() => handleTemplateSelection(template.name, index)}>
+            {selectedTemplate ? "✔ " : ""}{template.name}
           </Dropdown.Item>
+
         ))}
       </DropdownButton>
 

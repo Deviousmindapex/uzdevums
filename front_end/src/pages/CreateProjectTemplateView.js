@@ -12,37 +12,95 @@ import { getAllUsers } from "../services/authService";
 export default function CreateProjectTemplateView() {
     const [templates, setTemplates] = useState([]);
     const [templateName, setTemplateName] = useState("");
+    const [templateDescription, setTemplateDescription] = useState("");
     const [tasks, setTasks] = useState([]);
     const [selectedTasks, setSelectedTasks] = useState([]);
     const [searchTemplate, setSearchTemplate] = useState("");
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [templateID, setTemplateID] = useState(null)
+
+    const fetchTasks = async () => {
+        try {
+            const response = await ProjectService.GetAllTasks();
+            setTasks(response.data);
+
+        } catch (error) {
+            console.error("Error fetching tasks:", error);
+        }
+    };
+
+
+    const fetchTempaltes = async () => {
+        try {
+            const response = await ProjectService.GetAllTemplates();
+            setTemplates(response.data);
+            console.log(response.data, "template");
+
+
+
+        } catch (error) {
+            console.error("Error fetching templates:", error);
+        }
+    };
+
+
+
 
     useEffect(() => {
-        // Fetch all tasks (assuming ProjectService has a method for this)
-        const fetchTasks = async () => {
-            try {
-                const response = await ProjectService.GetAllTasks();
-                setTasks(response.data);
 
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-            }
-        };
         fetchTasks();
+        fetchTempaltes();
     }, []);
 
-    const handleAddTemplate = () => {
+    const handleAddOrUpdateTemplate = async () => {
+
         if (!templateName || selectedTasks.length === 0) return;
 
         const newTemplate = {
             name: templateName,
+            description: templateDescription,
             tasks: selectedTasks,
+            id: templateID
+
         };
-        setTemplates([...templates, newTemplate]);
+
+        if (editingIndex !== null) {
+            const updatedTemplates = [...templates];
+            updatedTemplates[editingIndex] = newTemplate;
+            setTemplates(updatedTemplates);
+            setEditingIndex(null);
+            console.log(updatedTemplates);
+            try {
+                console.log(updatedTemplates);
+
+                const response = await ProjectService.UpdateOrEditTemplate("edit", updatedTemplates)
+                console.log(response.data);
+            } catch (error) {
+                console.error("Error updating template:", error);
+
+            }
+
+        } else {
+            console.log(newTemplate);
+            try {
+                const response = await ProjectService.UpdateOrEditTemplate("add", newTemplate)
+                console.log(response);
+
+            } catch (error) {
+                console.error("Error adding template:", error);
+            }
+
+            setTemplates([...templates, newTemplate]);
+
+        }
+
         setTemplateName("");
+        setTemplateDescription("");
         setSelectedTasks([]);
     };
 
     const handleTaskSelection = (event) => {
+
         const options = event.target.options;
         const selected = [];
         for (let i = 0; i < options.length; i++) {
@@ -51,6 +109,16 @@ export default function CreateProjectTemplateView() {
             }
         }
         setSelectedTasks(selected);
+    };
+
+    const handleEditTemplate = (index, id) => {
+        setSelectedTasks([]);
+        const template = templates[index];
+        setTemplateName(template.name);
+        setTemplateDescription(template.description);
+        setSelectedTasks(template.tasks);
+        setEditingIndex(index);
+        setTemplateID(id)
     };
 
     const filteredTemplates = templates.filter((template) =>
@@ -72,6 +140,16 @@ export default function CreateProjectTemplateView() {
                         />
                     </Form.Group>
 
+                    <Form.Group>
+                        <Form.Label>Template Description</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            value={templateDescription}
+                            onChange={(e) => setTemplateDescription(e.target.value)}
+                            placeholder="Enter template description"
+                        />
+                    </Form.Group>
+
                     <Form.Group className="mt-3">
                         <Form.Label>Select Tasks</Form.Label>
                         <Form.Control
@@ -88,8 +166,8 @@ export default function CreateProjectTemplateView() {
                         </Form.Control>
                     </Form.Group>
 
-                    <Button className="mt-3 w-100" onClick={handleAddTemplate}>
-                        Add Template
+                    <Button className="mt-3 w-100" onClick={handleAddOrUpdateTemplate}>
+                        {editingIndex !== null ? "Update Template" : "Add Template"}
                     </Button>
                 </Form>
             </Card>
@@ -107,14 +185,30 @@ export default function CreateProjectTemplateView() {
                     <thead>
                         <tr>
                             <th>Name</th>
+                            <th>Description</th>
                             <th>Tasks</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {filteredTemplates.map((template, index) => (
                             <tr key={index}>
                                 <td>{template.name}</td>
-                                <td>{template.tasks.map((task) => task.task_name).join(", ")}</td>
+                                <td>{template.description}</td>
+                                <td>{template.tasks.map((task) => {
+                                    try {
+                                        return JSON.parse(task).task_name
+                                    } catch {
+                                        return task.task_name
+                                    }
+
+
+                                }).join(", ")}</td>
+                                <td>
+                                    <Button variant="warning" size="sm" onClick={() => handleEditTemplate(index, template.id)}>
+                                        Edit
+                                    </Button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

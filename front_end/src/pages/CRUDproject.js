@@ -17,6 +17,7 @@ export default function ProjectList() {
     const [currentPageProject, setCurrentPageProject] = useState(1);
     const [showAddNewProjectForm, setShowAddNewProjectForm] = useState(false);
     const [AllTasks, setAllTasks] = useState([])
+    const [allTemplateData, setAllTemplateData] = useState([])
 
 
 
@@ -26,6 +27,16 @@ export default function ProjectList() {
         console.log(resp, "tasks");
         setAllTasks(resp.data)
 
+    }
+    const getAllTemplates = async () => {
+
+        try {
+            const resp = await ProjectService.GetAllTemplates()
+            setAllTemplateData(resp.data)
+            console.log(resp)
+        } catch (error) {
+            console.log("Couldnt get all templates");
+        }
     }
     const getAllProjectData = async () => {
         try {
@@ -39,6 +50,7 @@ export default function ProjectList() {
     useEffect(() => {
         getAllProjectData();
         getAllTasks();
+        getAllTemplates()
     }, []);
     const filteredProjects = projectData.filter((project) =>
         project.name.toLowerCase().includes(searchProject.toLowerCase())
@@ -62,9 +74,10 @@ export default function ProjectList() {
         <Card className="p-4 shadow">
             <Row>
                 {showAddNewProjectForm && (
-                    <AddNewProjectForm onSubmit={handleAddNewProject} AllTasks={AllTasks} />
+                    <AddNewProjectForm onSubmit={handleAddNewProject} AllTasks={AllTasks} AllTemplates={allTemplateData} />
                 )}
                 <Col>
+
                     <h4>All Projects</h4>
                 </Col>
                 <Col>

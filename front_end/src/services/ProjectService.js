@@ -1,5 +1,5 @@
 import axios from 'axios';
-const API_URL = 'http://localhost:3001/api'; // Update this URL if needed
+const API_URL = 'http://localhost:3010/api'; // Update this URL if needed
 
 
 export const ProjectService = {
@@ -12,9 +12,10 @@ export const ProjectService = {
             return [];
         }
     },
-    async AddNewProject(name, email, tasks) {
+    async AddNewProject(name, email, tasks, template) {
         try {
-            const response = await axios.post(`${API_URL}/AddNewProject`, { name, email, tasks });
+
+            const response = await axios.post(`${API_URL}/AddNewProject`, { name, email, tasks, template });
             console.log(response);
             return response
 
@@ -41,5 +42,29 @@ export const ProjectService = {
             return error;
 
         }
+    },
+    async UpdateOrEditTemplate(action, template) {
+        try {
+            const response = await axios.post(`${API_URL}/UpdateOrEditTemplate`, { action, template });
+            return response
+        } catch (error) {
+            console.error(error);
+            return error;
+        }
+
+
+    },
+    async GetAllTemplates() {
+        try {
+            const response = await axios.get(`${API_URL}/GetAllTemplates`);
+            console.log(response);
+
+            return response
+        } catch (error) {
+            console.error(error);
+            return error;
+        }
+
     }
+
 }
