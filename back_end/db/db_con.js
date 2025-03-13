@@ -1,13 +1,14 @@
 const { Pool } = require("pg");
 
 
+
 const createPool = (db_name) => {
     const pool = new Pool({
-        user: "postgres",
-        password: "parole",
-        host: "localhost",
+        user: process.env.DB_USER || "postgres",
+        password: process.env.DB_PASSWORD || "parole",
+        host: process.env.DB_HOST || "database", // <-- Use 'database' instead of 'localhost'
         database: db_name, // Dynamic database name
-        port: 5433,
+        port: process.env.DB_PORT || 5432, // Ensure it matches your Docker setup
     });
 
     // Test connection

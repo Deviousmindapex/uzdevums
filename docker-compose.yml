@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  database:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: parole
+      POSTGRES_DB: uzdevums
+    ports:
+      - "5433:5432" # External 5433 → Internal 5432
+    restart: always
+
+  backend:
+    build: ./back_end
+    ports:
+      - "3010:3010"
+    environment:
+      NODE_ENV: production
+      DB_HOST: database # Correct host (service name)
+      DB_PORT: 5432 # Internal PostgreSQL port
+      DB_USER: postgres
+      DB_PASSWORD: parole
+      DB_NAME: uzdevums
+    depends_on:
+      - database
+    restart: always
+
+  frontend:
+    build: ./front_end
+    ports:
+      - "8080:80"

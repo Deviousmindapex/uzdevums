@@ -3,11 +3,23 @@ const app = express();
 const cors = require("cors");
 const auth_service = require('./db/auth');
 const Project_service = require('./db/ProjectDB')
+
+
+
+// app.use((req, res) => {
+//     res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+//     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//     res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.header("Access-Control-Allow-Credentials", "true");
+// })
+
+
 app.use(cors({
-    origin: 'http://localhost:3000',
+
+    origin: 'http://localhost:8080',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    cCredential: true
+    credential: true
 }));
 
 
@@ -123,6 +135,6 @@ app.get('/api/GetAllTemplates', async (req, res) => {
     }
 })
 app.listen(3010, () => {
-    console.log('Server running on http://localhost:3000');
+    console.log(`Server running on http://localhost:${3010} valdis`);
 });
 
