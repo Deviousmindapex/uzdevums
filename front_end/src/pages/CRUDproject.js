@@ -24,7 +24,7 @@ export default function ProjectList() {
     const itemsPerPage = 5;
     const getAllTasks = async () => {
         const resp = await ProjectService.GetAllTasks()
-        console.log(resp, "tasks");
+            (resp, "tasks");
         setAllTasks(resp.data)
 
     }
@@ -33,15 +33,15 @@ export default function ProjectList() {
         try {
             const resp = await ProjectService.GetAllTemplates()
             setAllTemplateData(resp.data)
-            console.log(resp)
+                (resp)
         } catch (error) {
-            console.log("Couldnt get all templates");
+            ("Couldnt get all templates");
         }
     }
     const getAllProjectData = async () => {
         try {
             const response = await ProjectService.GetAllProjects();
-            console.log(response);
+            (response);
             setProjectData(response.data);
         } catch (error) {
             console.error("Error fetching project data:", error);

@@ -14,7 +14,7 @@ const createPool = (db_name) => {
     // Test connection
     pool.connect()
         .then(client => {
-            console.log(` Connected to PostgreSQL database: ${db_name}`);
+            (` Connected to PostgreSQL database: ${db_name}`);
             client.release();
         })
         .catch(err => console.error(` Connection error to ${db_name}`, err.stack));

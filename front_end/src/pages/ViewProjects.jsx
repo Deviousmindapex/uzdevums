@@ -46,7 +46,7 @@ export default function ViewProjects() {
   }, []); // Only runs once on mount
 
   useEffect(() => {
-    console.log("Updated projectData:", projectData);
+    "Updated projectData:", projectData;
   }, [projectData, updateCounter]); // Logs only when projectData updates
 
   const filteredProjects = projectData.filter((project) =>
@@ -76,8 +76,8 @@ export default function ViewProjects() {
   };
   const GetTaskData = (index) => {
     try {
-      console.log(index);
-      console.log(projectData);
+      index;
+      projectData;
 
       setTaskData(projectData[index].tasks);
       setActiveProjectRow(index);
@@ -89,11 +89,11 @@ export default function ViewProjects() {
   const getSelectedTask = async (task, id) => {
     try {
       const resp = await getAllUsers();
-      console.log(resp.data);
+      resp.data;
       setUsers(resp.data);
     } catch {}
-    console.log(JSON.parse(task));
-    console.log(id);
+    JSON.parse(task);
+    id;
     setTaskActive(true);
     setTaskStatus(JSON.parse(task).status);
     setAsignTo(JSON.parse(task).responsible);
@@ -111,10 +111,10 @@ export default function ViewProjects() {
     projectData[activeProjectRow].tasks.map((obj) => {
       task.push(JSON.parse(obj));
     });
-    // console.log(taskComment);
-    console.log(taskStatus);
-    // console.log(projectData[activeProjectRow]);
-    // console.log(task);
+    // (taskComment);
+    taskStatus;
+    // (projectData[activeProjectRow]);
+    // (task);
 
     if (taskStatus === "completed" && !taskComment) {
       return;
@@ -125,13 +125,13 @@ export default function ViewProjects() {
     task[activeTaskRow].status = taskStatus;
     task[activeTaskRow].responsible = asignTo;
 
-    console.log(projectData[activeProjectRow].id);
+    projectData[activeProjectRow].id;
     try {
       const resp = await ProjectService.UpdateProjectTask(
         projectData[activeProjectRow].id,
         task
       );
-      console.log(task);
+      task;
 
       const updatedData = await getAllProjectData();
       setProjectData([...updatedData]);

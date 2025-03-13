@@ -27,37 +27,32 @@ app.use(express.json());
 
 
 app.post('/api/login', async (req, res) => {
-    console.log(req.body)
     try {
         const resp = await auth_service.login(req.body.email, req.body.password)
         return res.json({ message: "Hello" })
 
     } catch (error) {
-        console.log(error);
 
         return res.status(400).json({ message: error || "Login failed" });
 
     }
 });
 app.post('/api/logout', async (req, res) => {
-    console.log(req.body)
     try {
         const resp = await auth_service.logOut(req.body.email)
         return res.json({ message: "succesfully logged out" })
     } catch (err) {
-        console.log(err);
+        (err);
         return res.status(400).json({ message: "Failed to log out" });
     }
 })
 
 app.get('/api/checkIfActive', async (req, res) => {
     try {
-        console.log(req.query.email);
 
         const resp = await auth_service.checkIfActive(req.query.email)
         return res.json({ message: resp })
     } catch (error) {
-        console.log(error);
         return res.status(400).json({ message: "Failed to check if active" });
     }
 
@@ -67,7 +62,7 @@ app.get('/api/GetAllProjects', async (req, res) => {
         const resp = await Project_service.GetAllProjects()
         return res.json({ data: resp })
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to get all projects" });
     }
 })
@@ -75,11 +70,11 @@ app.post('/api/AddNewProject', async (req, res) => {
     try {
 
         const resp = await Project_service.addNewProject(req.body.name, req.body.email, req.body.tasks, req.body.template)
-        console.log(resp);
+            (resp);
 
         return res.json({ message: "Project added successfully" })
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json(error);
     }
 
@@ -89,18 +84,18 @@ app.get('/api/GetAllTasks', async (req, res) => {
         const resp = await Project_service.getAllTasks()
         return res.json({ data: resp })
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to get all tasks" });
     }
 
 })
 app.post('/api/UpdateProjectTask', async (req, res) => {
     try {
-        console.log(req.body, "body");
+        (req.body, "body");
         const resp = await Project_service.updateProjectTasks(req.body.id, req.body.task)
         return res.json()
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to update project task" });
     }
 
@@ -110,18 +105,18 @@ app.get('/api/GetAllUsers', async (req, res) => {
         const resp = await auth_service.getAllUsernames()
         return res.json(resp)
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to get all users" });
     }
 
 })
 app.post('/api/UpdateOrEditTemplate', async (req, res) => {
     try {
-        console.log(req.body);
+        (req.body);
         const resp = await Project_service.updateOrEditTemplate(req.body.action, req.body.template)
         return res.json()
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to update or edit template" });
     }
 })
@@ -130,11 +125,11 @@ app.get('/api/GetAllTemplates', async (req, res) => {
         const resp = await Project_service.GetAllTemplates()
         return res.json(resp)
     } catch (error) {
-        console.log(error);
+        (error);
         return res.status(400).json({ message: "Failed to get all templates" });
     }
 })
 app.listen(3010, () => {
-    console.log(`Server running on http://localhost:${3010} valdis`);
+    (`Server running on http://localhost:${3010} valdis`);
 });
 

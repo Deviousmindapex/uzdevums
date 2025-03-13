@@ -9,7 +9,7 @@ export async function loginUser(email, password) {
         return response;
 
     } catch (error) {
-        console.log(error, "data2");
+        (error, "data2");
 
 
 
@@ -22,7 +22,7 @@ export async function logoutUser(email) {
         return response;
 
     } catch (error) {
-        console.log("LogOut error", error);
+        ("LogOut error", error);
         throw new Error(error.response?.data?.message || 'LogOut failed');
     }
 }
@@ -32,7 +32,7 @@ export async function checkIfActive(email) {
         const response = await axios.get(`${API_URL}/checkIfActive`, { params: { email } });
         return response;
     } catch (error) {
-        console.log("checkIfActive error", error);
+        ("checkIfActive error", error);
         throw new Error(error.response?.data?.message || 'checkIfActive failed');
     }
 }
@@ -41,7 +41,7 @@ export async function getAllUsers() {
         const response = await axios.get(`${API_URL}/GetAllUsers`);
         return response;
     } catch (error) {
-        console.log("getAllUsers error", error);
+        ("getAllUsers error", error);
         throw new Error(error.response?.data?.message || 'getAllUsers failed');
     }
 

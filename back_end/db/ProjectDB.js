@@ -19,7 +19,7 @@ const GetAllProjects = async () => {
 }
 
 const addNewProject = async (name, email, tasks = null, template = null, comment = null) => {
-    console.log(tasks, template);
+    (tasks, template);
     const allTasks = []
 
 
@@ -135,7 +135,7 @@ const updateProjectTasks = (id, tasks) => {
 }
 const updateOrEditTemplate = (action, template) => {
     return new Promise((resolve, reject) => {
-        console.log(template, "template");
+        (template, "template");
         const pool = createPool("uzdevums");
 
         if (action === "edit") {

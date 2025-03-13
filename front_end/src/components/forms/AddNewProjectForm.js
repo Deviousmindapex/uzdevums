@@ -19,7 +19,7 @@ export default function AddNewProjectForm({ onSubmit, AllTasks, AllTemplates }) 
   const templates = AllTemplates; // Example template data
   // const tasks = ["Task A", "Task B", "Task C"]; // Example task data
   const tasks = AllTasks; // Example task data
-  console.log(templates);
+  (templates);
 
   const handleTaskSelection = (task, index) => {
     setSelectedTasks((prevTasks) =>
@@ -95,10 +95,10 @@ export default function AddNewProjectForm({ onSubmit, AllTasks, AllTemplates }) 
         dbTasks,
         selectedTemplateID,
       );
-      console.log(response);
+      (response);
       onSubmit();
     } catch (error) {
-      console.log(error.message, "error");
+      (error.message, "error");
       setError(error.message);
     }
   };

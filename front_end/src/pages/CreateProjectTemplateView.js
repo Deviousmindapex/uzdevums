@@ -34,7 +34,7 @@ export default function CreateProjectTemplateView() {
         try {
             const response = await ProjectService.GetAllTemplates();
             setTemplates(response.data);
-            console.log(response.data, "template");
+            (response.data, "template");
 
 
 
@@ -69,22 +69,22 @@ export default function CreateProjectTemplateView() {
             updatedTemplates[editingIndex] = newTemplate;
             setTemplates(updatedTemplates);
             setEditingIndex(null);
-            console.log(updatedTemplates);
+            (updatedTemplates);
             try {
-                console.log(updatedTemplates);
+                (updatedTemplates);
 
                 const response = await ProjectService.UpdateOrEditTemplate("edit", updatedTemplates)
-                console.log(response.data);
+                    (response.data);
             } catch (error) {
                 console.error("Error updating template:", error);
 
             }
 
         } else {
-            console.log(newTemplate);
+            (newTemplate);
             try {
                 const response = await ProjectService.UpdateOrEditTemplate("add", newTemplate)
-                console.log(response);
+                    (response);
 
             } catch (error) {
                 console.error("Error adding template:", error);

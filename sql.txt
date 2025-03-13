@@ -1,0 +1,48 @@
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    task_name TEXT NOT NULL,
+    template TEXT NULL,
+    description TEXT NULL,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'in_progress', 'completed')),
+    username TEXT NULL,
+    comment TEXT[] NULL,
+    responsible TEXT NULL
+);
+
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT false,
+    token TEXT NULL,
+    username TEXT NOT NULL
+);
+
+CREATE TABLE templates (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    tasks INTEGER[] NULL,
+    template TEXT NULL,
+    comment TEXT NULL
+);
+
+
+
+CREATE TABLE projects (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NULL,
+    tasks TEXT[] NULL,
+    template TEXT NULL,
+    comment TEXT NULL,
+    username TEXT NULL,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'in_progress', 'completed'))
+);
+
+
+INSERT INTO users (email, password, is_active, token, username)
+VALUES ('drakons002@inbox.lv', 'parole', false, 'some_token_value', 'valdis');
+
+
