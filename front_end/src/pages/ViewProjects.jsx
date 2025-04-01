@@ -46,7 +46,7 @@ export default function ViewProjects() {
   }, []); // Only runs once on mount
 
   useEffect(() => {
-    "Updated projectData:", projectData;
+    console.log("Updated projectData:", projectData);
   }, [projectData, updateCounter]); // Logs only when projectData updates
 
   const filteredProjects = projectData.filter((project) =>
@@ -76,9 +76,6 @@ export default function ViewProjects() {
   };
   const GetTaskData = (index) => {
     try {
-      index;
-      projectData;
-
       setTaskData(projectData[index].tasks);
       setActiveProjectRow(index);
     } catch {
@@ -89,11 +86,9 @@ export default function ViewProjects() {
   const getSelectedTask = async (task, id) => {
     try {
       const resp = await getAllUsers();
-      resp.data;
       setUsers(resp.data);
     } catch {}
     JSON.parse(task);
-    id;
     setTaskActive(true);
     setTaskStatus(JSON.parse(task).status);
     setAsignTo(JSON.parse(task).responsible);
@@ -112,7 +107,6 @@ export default function ViewProjects() {
       task.push(JSON.parse(obj));
     });
     // (taskComment);
-    taskStatus;
     // (projectData[activeProjectRow]);
     // (task);
 
@@ -125,13 +119,11 @@ export default function ViewProjects() {
     task[activeTaskRow].status = taskStatus;
     task[activeTaskRow].responsible = asignTo;
 
-    projectData[activeProjectRow].id;
     try {
       const resp = await ProjectService.UpdateProjectTask(
         projectData[activeProjectRow].id,
         task
       );
-      task;
 
       const updatedData = await getAllProjectData();
       setProjectData([...updatedData]);

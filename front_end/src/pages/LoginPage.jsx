@@ -18,7 +18,7 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, navigate]);
   const handleLogin = (email, password) => {
-    "Logging in with", { email, password };
+    console.log("Logging in with", { email, password });
     setIsAuthenticated(true);
     storageService.setItem("username", email);
   };

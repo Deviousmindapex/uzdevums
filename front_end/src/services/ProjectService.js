@@ -16,7 +16,6 @@ export const ProjectService = {
         try {
 
             const response = await axios.post(`${API_URL}/AddNewProject`, { name, email, tasks, template });
-            (response);
             return response
 
         } catch (error) {
@@ -57,7 +56,6 @@ export const ProjectService = {
     async GetAllTemplates() {
         try {
             const response = await axios.get(`${API_URL}/GetAllTemplates`);
-            (response);
 
             return response
         } catch (error) {

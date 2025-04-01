@@ -35,13 +35,12 @@ export default function ProjectList() {
             setAllTemplateData(resp.data)
                 (resp)
         } catch (error) {
-            ("Couldnt get all templates");
+            console.log("Couldnt get all templates");
         }
     }
     const getAllProjectData = async () => {
         try {
             const response = await ProjectService.GetAllProjects();
-            (response);
             setProjectData(response.data);
         } catch (error) {
             console.error("Error fetching project data:", error);

@@ -20,7 +20,7 @@ export default function LoginForm({ onLogin }) {
     // Call the login handler
     try {
       const response = await loginUser(email, password);
-      "Login successful", response;
+      console.log("Login successful", response);
       onLogin(email, password); // Only proceed if login is successful
     } catch (error) {
       console.error("Login failed:", error.message);
