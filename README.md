@@ -2,6 +2,8 @@ This project is a full-stack web application using:
 
 - **Frontend:** React (served via Nginx)
 - **Backend:** Node.js with Express
+- **Database:** PostgreSQL
+- **ML Pipeline:** Python-based machine learning training pipeline
 - **Containerization:** Docker & Docker Compose
 
 ### 1️⃣ **Install Docker & Docker Compose**
@@ -55,3 +57,39 @@ This will stop and remove the containers, but it will not delete the Docker imag
 to delete the Docker images, use the following command:
 bash
 docker system prune -af
+
+## 🤖 **ML Training Pipeline**
+
+The project includes a machine learning training pipeline for analyzing task completion patterns and project success factors.
+
+### **Running the ML Pipeline**
+
+1. **Setup the pipeline:**
+   ```bash
+   chmod +x setup_ml_pipeline.sh
+   ./setup_ml_pipeline.sh
+   ```
+
+2. **Run the training pipeline:**
+   ```bash
+   python3 ml_training_pipeline.py
+   ```
+
+### **Pipeline Features**
+
+- **Task Analysis:** Analyzes task completion patterns and rates
+- **User Productivity:** Evaluates user performance metrics
+- **Project Success:** Predicts project success factors
+- **Database Integration:** Connects to PostgreSQL when available
+- **Fallback Mode:** Uses simulated data when database is unavailable
+- **Comprehensive Logging:** Detailed logs saved to `training_logs_2025.log`
+- **Model Export:** Trained model saved to `trained_model_2025.json`
+
+### **Output Files**
+
+- `training_logs_2025.log` - Detailed execution logs
+- `trained_model_2025.json` - Trained model data and insights
+
+### **Dependencies**
+
+The pipeline automatically handles missing dependencies and falls back to basic functionality when advanced ML libraries are not available.
